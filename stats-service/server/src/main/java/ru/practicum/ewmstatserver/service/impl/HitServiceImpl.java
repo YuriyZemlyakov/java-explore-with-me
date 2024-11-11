@@ -11,8 +11,8 @@ import ru.practicum.ewmstatserver.service.HitService;
 @Service
 @AllArgsConstructor
 public class HitServiceImpl implements HitService {
-    StatsRepository statsRepository;
-    HitMapper mapper;
+    private StatsRepository statsRepository;
+    private HitMapper mapper;
 
     @Override
     public HitDto addHit(HitDto hitDto) {

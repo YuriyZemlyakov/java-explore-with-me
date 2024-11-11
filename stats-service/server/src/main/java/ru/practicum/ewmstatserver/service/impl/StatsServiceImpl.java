@@ -12,7 +12,7 @@ import java.util.Collection;
 @Service
 @AllArgsConstructor
 public class StatsServiceImpl implements StatsService {
-    StatsRepository statsRepository;
+    private StatsRepository statsRepository;
 
     @Override
     public Collection<StatsDto> getStats(LocalDateTime start, LocalDateTime end,

@@ -17,8 +17,8 @@ import java.util.Collection;
 @AllArgsConstructor
 @Slf4j
 public class StatsController {
-    HitService hitService;
-    StatsService statsService;
+    private HitService hitService;
+    private StatsService statsService;
 
     @PostMapping("/hit")
     public HitDto addHit(@Valid @RequestBody HitDto hitDto) {
