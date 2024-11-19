@@ -12,10 +12,12 @@ public interface EventMapper {
     Event newDtoToEvent(NewEventDto dto);
     @Mapping(source = "location.lat", target = "locationLat")
     @Mapping(source = "location.lon", target = "locationLon")
+    @Mapping(target = "category", ignore = true)
     Event updateAdminDtoToEvent(UpdateEventAdminRequest dto);
 
     @Mapping(source = "location.lat", target = "locationLat")
     @Mapping(source = "location.lon", target = "locationLon")
+    @Mapping(target = "category", ignore = true)
     Event updateUserDtoToEvent(UpdateEventUserRequest dto);
     @Mapping(source = "locationLat", target = "location.lat")
     @Mapping(source = "locationLon", target = "location.lon")

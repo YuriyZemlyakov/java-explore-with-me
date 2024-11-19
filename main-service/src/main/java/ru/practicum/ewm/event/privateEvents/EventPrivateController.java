@@ -2,7 +2,9 @@ package ru.practicum.ewm.event.privateEvents;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.model.*;
 import ru.practicum.ewm.participation.model.ParticipationRequestDto;
@@ -12,6 +14,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/users/{userId}/events")
 @AllArgsConstructor
+@Slf4j
 public class EventPrivateController {
     private final EventPrivateService service;
     @GetMapping
@@ -22,6 +25,7 @@ public class EventPrivateController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto addEvent(@PathVariable long userId,
                                  @Valid @RequestBody NewEventDto newEventDto) {
         return service.addEvent(userId, newEventDto);
@@ -34,7 +38,7 @@ public class EventPrivateController {
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable long userId,
                                   @PathVariable long eventId,
-                                  @RequestBody UpdateEventUserRequest updateEventUserRequest) {
+                                  @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) {
         return service.updateEvent(userId, eventId, updateEventUserRequest);
     }
     @GetMapping("/{eventId}/requests")
@@ -42,8 +46,11 @@ public class EventPrivateController {
         return service.getEventParticipants(userId, eventId);
     }
     @PatchMapping("/{eventId}/requests")
-    public EventRequestStatusUpdateResult changeRequestStatus(long userId, long eventId,
-                                                              EventRequestStatusUpdateRequest statusUpdateRequest) {
+    public EventRequestStatusUpdateResult changeRequestStatus(@PathVariable long userId,
+                                                              @PathVariable long eventId,
+                                                              @Valid @RequestBody EventRequestStatusUpdateRequest statusUpdateRequest) {
+        log.info("Получен PATCH-запрос с параметрами userId = {}, eventId = {} и телом сообщения: {}", userId,
+                eventId, statusUpdateRequest);
         return service.changeRequestStatus(userId, eventId, statusUpdateRequest);
     }
 

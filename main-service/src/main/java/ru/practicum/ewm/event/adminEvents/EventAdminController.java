@@ -1,6 +1,8 @@
 package ru.practicum.ewm.event.adminEvents;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.model.EventFullDto;
 import ru.practicum.ewm.event.model.UpdateEventAdminRequest;
@@ -16,17 +18,18 @@ public class EventAdminController {
 
     @GetMapping
     public Collection<EventFullDto> getEvents(@RequestParam Collection<Long> users,
-                                              @RequestParam Collection<String> stats,
+                                              @RequestParam Collection<String> states,
                                               @RequestParam Collection<Long> categories,
-                                              @RequestParam LocalDateTime rangeStart,
-                                              @RequestParam LocalDateTime rangeEnd,
-                                              @RequestParam long from,
-                                              @RequestParam long size) {
-        return service.getEvents(users, stats, categories, rangeStart, rangeEnd, from, size);
+                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                              @RequestParam(defaultValue = "0") long from,
+                                              @RequestParam(defaultValue = "10") long size) {
+        return service.getEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto editEvent(@PathVariable long eventId, UpdateEventAdminRequest requestDto) {
+    public EventFullDto editEvent(@PathVariable long eventId,
+                                  @Valid @RequestBody UpdateEventAdminRequest requestDto) {
         return service.editEvent(eventId, requestDto);
     }
 }

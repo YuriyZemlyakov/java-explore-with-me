@@ -13,7 +13,9 @@ public class Participation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long event;
+    @Column(name = "user_id")
     private long requester;
+    @Enumerated(EnumType.STRING)
     private StateParticipation status;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

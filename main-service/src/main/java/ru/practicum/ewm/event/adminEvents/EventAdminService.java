@@ -8,7 +8,7 @@ import java.util.Collection;
 
 public interface EventAdminService {
     Collection<EventFullDto> getEvents(Collection<Long> users,
-                           Collection<String> stats,
+                           Collection<String> states,
                            Collection<Long> categories,
                            LocalDateTime rangeStart,
                            LocalDateTime rangeEnd,

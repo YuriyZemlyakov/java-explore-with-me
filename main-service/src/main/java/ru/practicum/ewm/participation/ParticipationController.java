@@ -1,6 +1,7 @@
 package ru.practicum.ewm.participation;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.model.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.event.model.EventRequestStatusUpdateResult;
@@ -19,6 +20,7 @@ public class ParticipationController {
         return service.getUserRequests(userId);
     }
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto addParticipationRequest(@PathVariable long userId, @RequestParam long eventId) {
         return service.addParticipationRequest(userId, eventId);
     }

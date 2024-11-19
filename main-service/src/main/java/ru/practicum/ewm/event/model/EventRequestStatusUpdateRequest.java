@@ -7,7 +7,7 @@ import java.util.Collection;
 
 @Data
 public class EventRequestStatusUpdateRequest {
-    private Collection<Long> ids;
+    private Collection<Long> requestIds;
     private StateParticipation status;
 
 }
