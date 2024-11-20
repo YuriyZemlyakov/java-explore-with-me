@@ -46,6 +46,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     @Override
     public EventFullDto addEvent(long userId, NewEventDto newEventDto) {
+        EventValidator.validateEventDateNew(newEventDto);
         Event event = mapper.newDtoToEvent(newEventDto);
         long categoryId = newEventDto.getCategory();
         event.setCategory(categoryStorage.findById(categoryId)
@@ -150,7 +151,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         long confirmedRequests = event.getConfirmedRequests();
         long participantLimit = event.getParticipantLimit();
         if (request.getRequestIds().size() > (participantLimit - confirmedRequests)) {
-            throw new ValidationException("Превышено максимальное число участников");
+            throw new ConflictException("Превышено максимальное число участников");
         }
         log.info("Проверка на максимальное число участников пройдена успешно");
     }

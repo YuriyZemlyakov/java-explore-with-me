@@ -1,5 +1,6 @@
 package ru.practicum.ewm.event.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import ru.practicum.ewm.category.Category;
@@ -19,6 +20,7 @@ public class EventFullDto {
     private LocalDateTime createdOn;
     private String description;
     @NotBlank
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     @NotBlank
     private UserShortDto initiator;

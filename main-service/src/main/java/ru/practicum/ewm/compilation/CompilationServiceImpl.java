@@ -22,8 +22,10 @@ public class CompilationServiceImpl implements CompilationService {
     private final CompilationMapper mapper;
     @Override
     public Collection<CompilationDto> getCompilations(boolean pinned, int from, int size) {
-        return storage.findWithPagination(from, size).stream()
+        return storage.findAll().stream()
                 .map(compilation -> mapper.entityToDto(compilation))
+                .skip(from)
+                .limit(size)
                 .collect(Collectors.toList());
     }
 
@@ -35,8 +37,10 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto saveCompilation(NewCompilationDto newCompilationDto) {
         Compilation compilation = mapper.dtoToEntity(newCompilationDto);
-        Set<Event> events = getEventsById(newCompilationDto.getEvents());
-        compilation.setEvents(events);
+        if (newCompilationDto.getEvents() != null) {
+            Set<Event> events = getEventsById(newCompilationDto.getEvents());
+            compilation.setEvents(events);
+        }
         return mapper.entityToDto(storage.save(compilation));
     }
 

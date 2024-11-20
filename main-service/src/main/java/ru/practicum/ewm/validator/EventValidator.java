@@ -1,12 +1,10 @@
 package ru.practicum.ewm.validator;
 
 import ru.practicum.ewm.event.dal.EventStorage;
-import ru.practicum.ewm.event.model.Event;
-import ru.practicum.ewm.event.model.StateEvent;
-import ru.practicum.ewm.event.model.UpdateEventAdminRequest;
-import ru.practicum.ewm.event.model.UpdateEventUserRequest;
+import ru.practicum.ewm.event.model.*;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
+import ru.practicum.ewm.exception.ValidationException;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +12,7 @@ public class EventValidator {
     public static void validateEventDateAdmin(UpdateEventAdminRequest updateDto) {
         if (updateDto.getEventDate() != null) {
             if (updateDto.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
-                throw new ConflictException("дата начала изменяемого события должна быть не ранее чем за час от " +
+                throw new ValidationException("дата начала изменяемого события должна быть не ранее чем за час от " +
                         "даты публикации");
             }
         }
@@ -23,11 +21,21 @@ public class EventValidator {
     public static void validateEventDateUser(UpdateEventUserRequest updateDto) {
         if (updateDto.getEventDate() != null) {
             if (updateDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new ConflictException("дата начала изменяемого события должна быть не ранее чем за 2 часа от " +
+                throw new ValidationException("дата начала изменяемого события должна быть не ранее чем за 2 часа от " +
                         "даты публикации");
             }
         }
     }
+
+    public static void validateEventDateNew(NewEventDto newEventDto) {
+        if (newEventDto.getEventDate() != null) {
+            if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+                throw new ValidationException("дата начала изменяемого события должна быть не ранее чем за 2 часа от " +
+                        "даты публикации");
+            }
+        }
+    }
+
 
     public static Event checkEventExists(EventStorage storage, long eventId) {
         return storage.findById(eventId).orElseThrow(()-> new NotFoundException(String.

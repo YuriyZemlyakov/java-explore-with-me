@@ -65,6 +65,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>ru.yandex.practicum</groupId>
+            <artifactId>dto</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.querydsl</groupId>
             <artifactId>querydsl-jpa</artifactId>
             <classifier>jakarta</classifier>

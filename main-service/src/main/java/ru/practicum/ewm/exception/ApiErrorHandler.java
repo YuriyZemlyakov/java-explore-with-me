@@ -1,5 +1,6 @@
 package ru.practicum.ewm.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -57,4 +58,14 @@ public class ApiErrorHandler {
         return new ResponseEntity<>(apirError,apirError.status);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<ApiError> handleDataIntegrityViolationException (DataIntegrityViolationException e) {
+        ApiError apirError = ApiError.builder()
+                .message(e.getMessage())
+                .reason("Попытка внести дубликат")
+                .status(HttpStatus.CONFLICT)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(apirError, apirError.status);
+    }
 }

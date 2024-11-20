@@ -9,7 +9,7 @@ import java.util.Collection;
 public interface EventPublicService {
     Collection<EventShortDto> getEvents(String text,
                                         Collection<Long> categories,
-                                        boolean paid,
+                                        Boolean paid,
                                         LocalDateTime rangeStart,
                                         LocalDateTime rangeEnd,
                                         boolean onlyAvailable,
@@ -18,5 +18,5 @@ public interface EventPublicService {
                                         int size
                                         );
 
-    EventFullDto getEvent(long eventId);
+    EventFullDto getEvent(long eventId, boolean isFirstView);
 }

@@ -9,7 +9,7 @@ import java.util.Collection;
 public interface ParticipationService {
     Collection<ParticipationRequestDto> getUserRequests(long userId);
     ParticipationRequestDto addParticipationRequest(long userId, long eventId);
-    ParticipationRequestDto cancelRequest(long userId, long eventId);
+    ParticipationRequestDto cancelRequest(long userId, long requestId);
 
 
 

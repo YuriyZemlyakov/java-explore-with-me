@@ -7,6 +7,7 @@ import ru.practicum.ewmDto.StatsDto;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface StatsRepository extends JpaRepository<Hit, Long> {
 
@@ -19,4 +20,5 @@ public interface StatsRepository extends JpaRepository<Hit, Long> {
             "where h.timestamp between ?1 and ?2 and (?3 is null or h.uri  in (?3)) group by h.app, h.uri " +
             "order by hits desc")
     Collection<StatsDto> getStats(LocalDateTime start, LocalDateTime end, Collection<String> uris);
+    Collection<Hit> findByIpAndUri(String ip, String uri);
 }

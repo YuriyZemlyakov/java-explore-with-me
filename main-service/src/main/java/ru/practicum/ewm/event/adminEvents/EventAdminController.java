@@ -17,11 +17,11 @@ public class EventAdminController {
     private final EventAdminService service;
 
     @GetMapping
-    public Collection<EventFullDto> getEvents(@RequestParam Collection<Long> users,
-                                              @RequestParam Collection<String> states,
-                                              @RequestParam Collection<Long> categories,
-                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+    public Collection<EventFullDto> getEvents(@RequestParam(required = false) Collection<Long> users,
+                                              @RequestParam(required = false) Collection<String> states,
+                                              @RequestParam(required = false) Collection<Long> categories,
+                                              @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                              @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                               @RequestParam(defaultValue = "0") long from,
                                               @RequestParam(defaultValue = "10") long size) {
         return service.getEvents(users, states, categories, rangeStart, rangeEnd, from, size);

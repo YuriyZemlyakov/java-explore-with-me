@@ -1,5 +1,6 @@
 package ru.practicum.ewm.event.adminEvents;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -39,18 +40,25 @@ public class EventAdminServiceImpl implements EventAdminService {
                                               LocalDateTime rangeEnd,
                                               long from,
                                               long size) {
-        Collection<StateEvent> statesList = states.stream()
-                .map(state -> StateEvent.valueOf(state))
-                .collect(Collectors.toList());
-        BooleanExpression byUsers = QEvent.event.initiator.id.in(users);
-        BooleanExpression byStates = QEvent.event.state.in(statesList);
-        BooleanExpression byCategories = QEvent.event.category.id.in(categories);
-        BooleanExpression byStart = QEvent.event.eventDate.gt(rangeStart);
-        BooleanExpression byEnd = QEvent.event.eventDate.lt(rangeEnd);
-
+        BooleanBuilder builder = new BooleanBuilder();
+        if (users != null) {
+            builder.and(QEvent.event.initiator.id.in(users));
+        }
+        if (states != null) {
+            builder.and(QEvent.event.state.in(convertStringToEnum(states)));
+        }
+        if (categories != null) {
+            builder.and(QEvent.event.category.id.in(categories));
+        }
+        if (rangeStart != null) {
+            builder.and(QEvent.event.eventDate.gt(rangeStart));
+        }
+        if (rangeEnd != null) {
+            builder.and(QEvent.event.eventDate.lt(rangeEnd));
+        }
 
         Collection<Event> events = new ArrayList<>();
-        Iterable<Event> eventIterable = storage.findAll(byUsers.and(byStates).and(byCategories).and(byStart).and(byEnd));
+        Iterable<Event> eventIterable = storage.findAll(builder);
         eventIterable.forEach(event -> events.add(event));
         return events.stream()
                 .map(event -> mapper.eventToDto(event))
@@ -98,5 +106,11 @@ public class EventAdminServiceImpl implements EventAdminService {
     private Category getCategoryById(long categoryId) {
         return categoryStorage.findById(categoryId)
                 .orElseThrow(()-> new NotFoundException(String.format("Категория %s не найдена", categoryId)));
+    }
+    private Collection<StateEvent> convertStringToEnum(Collection<String> states) {
+        Collection<StateEvent> statesList = states.stream()
+                .map(state -> StateEvent.valueOf(state))
+                .collect(Collectors.toList());
+        return statesList;
     }
 }

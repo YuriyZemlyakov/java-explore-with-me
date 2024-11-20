@@ -23,7 +23,7 @@ public class NewEventDto {
     private LocalDateTime eventDate;
     private UserShortDto initiator;
     private Location location;
-    private boolean paid = true;
+    private boolean paid = false;
     @PositiveOrZero
     private long participantLimit;
     private boolean requestModeration = true;
