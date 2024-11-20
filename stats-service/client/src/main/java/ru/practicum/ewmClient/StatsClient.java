@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Component
 public class StatsClient {
-    private final String statsServerUrl = "http://localhost:9090";
+    private final String statsServerUrl = "http://stats-server:9090";
     private final RestTemplate restTemplate;
 
     public StatsClient() {
