@@ -81,8 +81,8 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     @Override
     public Collection<ParticipationRequestDto> getEventParticipants(long userId, long eventId) {
         Event event = storage.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(String.
-                        format("Event %s не найден", eventId)));
+                .orElseThrow(() -> new NotFoundException(String
+                        .format("Event %s не найден", eventId)));
         if (userId != event.getInitiator().getId()) {
             throw new ConflictException(String.format("Пользователь %s не имеет права запрашиать информацию " +
                     "об участниках события %s", userId, eventId));

@@ -38,8 +38,8 @@ public class EventValidator {
 
 
     public static Event checkEventExists(EventStorage storage, long eventId) {
-        return storage.findById(eventId).orElseThrow(() -> new NotFoundException(String.
-                format("Event %s не найден", eventId)));
+        return storage.findById(eventId).orElseThrow(() -> new NotFoundException(String
+                .format("Event %s не найден", eventId)));
     }
 
     public static void checkRejectAction(Event event) {
