@@ -22,16 +22,17 @@ public interface HitMapper {
     default LocalDateTime stringToDate(String string) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         if (string == null) {
-            return  null;
+            return null;
         }
         return LocalDateTime.parse(string, formatter);
     }
+
     @Named("DateToString")
     default String dateToString(LocalDateTime date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         if (date == null) {
             return null;
         }
-        return  date.format(formatter);
+        return date.format(formatter);
     }
 }

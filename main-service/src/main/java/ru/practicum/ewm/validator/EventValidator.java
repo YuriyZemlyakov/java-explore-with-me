@@ -38,7 +38,7 @@ public class EventValidator {
 
 
     public static Event checkEventExists(EventStorage storage, long eventId) {
-        return storage.findById(eventId).orElseThrow(()-> new NotFoundException(String.
+        return storage.findById(eventId).orElseThrow(() -> new NotFoundException(String.
                 format("Event %s не найден", eventId)));
     }
 

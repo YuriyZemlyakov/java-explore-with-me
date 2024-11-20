@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.StateEvent;
-import ru.practicum.ewm.user.User;
 
 import java.util.Collection;
 import java.util.Optional;

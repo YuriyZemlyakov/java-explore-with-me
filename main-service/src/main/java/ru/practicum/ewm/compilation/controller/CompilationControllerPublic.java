@@ -19,6 +19,7 @@ public class CompilationControllerPublic {
                                                       @RequestParam(defaultValue = "10") int size) {
         return service.getCompilations(pinned, from, size);
     }
+
     @GetMapping("/{compId}")
     public CompilationDto getCompilation(@PathVariable long compId) {
         return service.getCompilation(compId);

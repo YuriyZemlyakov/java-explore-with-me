@@ -16,7 +16,7 @@ public interface EventPublicService {
                                         SortType sort,
                                         int from,
                                         int size
-                                        );
+    );
 
     EventFullDto getEvent(long eventId, boolean isFirstView);
 }

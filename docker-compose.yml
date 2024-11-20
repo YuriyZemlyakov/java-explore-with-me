@@ -9,15 +9,15 @@ services:
       ewm-db:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5431/ewm-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/main-db
       - SPRING_DATASOURCE_USERNAME=dbuser
       - SPRING_DATASOURCE_PASSWORD=12345
   ewm-db:
     image: postgres:16.1
     ports:
-      - "5438:5438"
+      - "5438:5432"
     environment:
-      - POSTGRES_DB=ewm-db
+      - POSTGRES_DB=main-db
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=12345
     volumes:
@@ -36,7 +36,7 @@ services:
       stats-db:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5433/stats-db
       - SPRING_DATASOURCE_USERNAME=dbuser
       - SPRING_DATASOURCE_PASSWORD=12345
   stats-db:

@@ -1,12 +1,9 @@
 package ru.practicum.ewm.event.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import ru.practicum.ewm.category.Category;
 
 import java.time.LocalDateTime;
 

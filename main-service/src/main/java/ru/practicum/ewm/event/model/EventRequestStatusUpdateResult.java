@@ -7,6 +7,9 @@ import java.util.Collection;
 
 @Data
 public class EventRequestStatusUpdateResult {
-    private final Collection<ParticipationRequestDto> confirmedRequests;
-    private final Collection<ParticipationRequestDto> rejectedRequests;
+    private Collection<ParticipationRequestDto> confirmedRequests;
+    private Collection<ParticipationRequestDto> rejectedRequests;
+
+    public EventRequestStatusUpdateResult() {
+    }
 }

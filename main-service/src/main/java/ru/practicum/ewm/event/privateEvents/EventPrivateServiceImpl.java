@@ -11,7 +11,6 @@ import ru.practicum.ewm.event.model.*;
 import ru.practicum.ewm.event.model.mapper.EventMapper;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.participation.ParticipationStorage;
 import ru.practicum.ewm.participation.model.Participation;
 import ru.practicum.ewm.participation.model.ParticipationRequestDto;
@@ -21,7 +20,6 @@ import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserStorage;
 import ru.practicum.ewm.validator.EventValidator;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,7 +48,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         Event event = mapper.newDtoToEvent(newEventDto);
         long categoryId = newEventDto.getCategory();
         event.setCategory(categoryStorage.findById(categoryId)
-                .orElseThrow(()-> new NotFoundException(String.format("Категория %d не найдена", categoryId))));
+                .orElseThrow(() -> new NotFoundException(String.format("Категория %d не найдена", categoryId))));
         User user = userStorage.findById(userId).orElseThrow(() -> new NotFoundException("User не найден"));
         event.setInitiator(user);
         event.setState(StateEvent.PENDING);
@@ -60,7 +58,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     @Override
     public EventFullDto getEvent(long userId, long eventId) {
         Event event = storage.findById(eventId)
-                .orElseThrow(()-> new NotFoundException(String.format("Event %s не найден", eventId)));
+                .orElseThrow(() -> new NotFoundException(String.format("Event %s не найден", eventId)));
         if (event.getInitiator().getId() != userId) {
             throw new ConflictException(String.format("Пользователь %s не являтеся инициатором события и не может " +
                     "просматривать его", userId));
@@ -79,10 +77,11 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
         return mapper.eventToDto(storage.save(editedEvent));
     }
+
     @Override
     public Collection<ParticipationRequestDto> getEventParticipants(long userId, long eventId) {
         Event event = storage.findById(eventId)
-                .orElseThrow(()-> new NotFoundException(String.
+                .orElseThrow(() -> new NotFoundException(String.
                         format("Event %s не найден", eventId)));
         if (userId != event.getInitiator().getId()) {
             throw new ConflictException(String.format("Пользователь %s не имеет права запрашиать информацию " +
@@ -93,15 +92,16 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 .map(participation -> participationMapper.entityToDto(participation))
                 .collect(Collectors.toList());
     }
+
     @Override
     @Transactional
     public EventRequestStatusUpdateResult changeRequestStatus(long userId, long eventId,
-                                                              EventRequestStatusUpdateRequest request){
+                                                              EventRequestStatusUpdateRequest request) {
         log.info("Старт обработки в методе изменения статуса");
         StateParticipation status = request.getStatus();
         Event event = storage.findById(eventId)
-                .orElseThrow(()-> new NotFoundException(String.format("Event %s не найден", eventId)));
-        if (!event.isRequestModeration() || event.getParticipantLimit() ==0) {
+                .orElseThrow(() -> new NotFoundException(String.format("Event %s не найден", eventId)));
+        if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
             throw new ConflictException("Модерация не требуется");
         }
         if (userId != event.getInitiator().getId()) {
@@ -113,7 +113,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         Collection<Participation> participations = participationStorage.findAllById(request.getRequestIds());
         checkStatus(participations);
 
-        if (status == StateParticipation.CONFIRMED ) {
+        if (status == StateParticipation.CONFIRMED) {
             log.info("Требуется установить статус CONFIRMED");
             checkParticipantsLimit(event, request);
             event.setConfirmedRequests(event.getConfirmedRequests() + request.getRequestIds().size());
@@ -127,26 +127,38 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         if (status == StateParticipation.REJECTED) {
             if (request.getRequestIds().size() < event.getConfirmedRequests()) {
                 event.setConfirmedRequests(event.getConfirmedRequests() - request.getRequestIds().size());
-                participations.stream()
-                        .forEach(participation -> participation.setStatus(status));
             } else {
                 event.setConfirmedRequests(0);
             }
+            participations.stream()
+                    .forEach(participation -> participation.setStatus(status));
         }
-        participationStorage.saveAll(participations);
-        log.info("Сохранение заявок на участие с обновленным статусом");
-        Collection<ParticipationRequestDto> confirmedRequests = participationStorage.findByStatus(StateParticipation.CONFIRMED)
-                .stream()
+        Collection<ParticipationRequestDto> updatedParticipations = participationStorage.saveAll(participations).stream()
                 .map(participation -> participationMapper.entityToDto(participation))
                 .collect(Collectors.toList());
-        Collection<ParticipationRequestDto> rejectedRequests = participationStorage.findByStatus(StateParticipation.REJECTED)
-                .stream()
-                .map(participation -> participationMapper.entityToDto(participation))
-                .collect(Collectors.toList());
-
-        EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult(confirmedRequests, rejectedRequests);
+        EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
+        if (StateParticipation.CONFIRMED == status) {
+            result.setConfirmedRequests(updatedParticipations);
+        } else {
+            result.setRejectedRequests(updatedParticipations);
+        }
         return result;
+
+
+//        log.info("Сохранение заявок на участие с обновленным статусом");
+//        Collection<ParticipationRequestDto> confirmedRequests = participationStorage.findByStatus(StateParticipation.CONFIRMED)
+//                .stream()
+//                .map(participation -> participationMapper.entityToDto(participation))
+//                .collect(Collectors.toList());
+//        Collection<ParticipationRequestDto> rejectedRequests = participationStorage.findByStatus(StateParticipation.REJECTED)
+//                .stream()
+//                .map(participation -> participationMapper.entityToDto(participation))
+//                .collect(Collectors.toList());
+//
+//        EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult(confirmedRequests, rejectedRequests);
+//        return result;
     }
+
     private void checkParticipantsLimit(Event event, EventRequestStatusUpdateRequest request) {
         long confirmedRequests = event.getConfirmedRequests();
         long participantLimit = event.getParticipantLimit();
@@ -155,6 +167,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         }
         log.info("Проверка на максимальное число участников пройдена успешно");
     }
+
     private void checkStatus(Collection<Participation> participations) {
         for (Participation participation : participations) {
             if (participation.getStatus() != StateParticipation.PENDING) {
@@ -164,6 +177,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         }
         log.info("Проверка на свободные места пройдена успешно");
     }
+
     private Event buildEditedObject(Event event, UpdateEventUserRequest updatedFields) {
         Optional.ofNullable(updatedFields.getAnnotation()).ifPresent(event::setAnnotation);
         Optional.ofNullable(updatedFields.getDescription()).ifPresent(event::setDescription);
@@ -178,7 +192,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 event.setState(StateEvent.PENDING);
             }
             if (stateActionUser == StateActionUser.CANCEL_REVIEW) {
-                event.setState(StateEvent.CANCELLED);
+                event.setState(StateEvent.CANCELED);
             }
 
         });
@@ -186,14 +200,15 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         if (updatedFields.getCategory() != 0) {
             event.setCategory(getCategoryById(updatedFields.getCategory()));
         }
-        if (updatedFields.getParticipantLimit() >0) {
+        if (updatedFields.getParticipantLimit() > 0) {
             event.setParticipantLimit(updatedFields.getParticipantLimit());
         }
         return event;
     }
+
     private Category getCategoryById(long categoryId) {
         return categoryStorage.findById(categoryId)
-                .orElseThrow(()-> new NotFoundException(String.format("Категория %s не найдена", categoryId)));
+                .orElseThrow(() -> new NotFoundException(String.format("Категория %s не найдена", categoryId)));
     }
 
 

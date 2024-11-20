@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
-import net.bytebuddy.dynamic.loading.InjectionClassLoader;
 
 @Entity
 @Data

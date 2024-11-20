@@ -22,7 +22,7 @@ public class CategoryController {
         return service.editCategory(categoryId, categoryDto);
     }
 
-//    ToDo добавить проверку на наличие связанных событий
+    //    ToDo добавить проверку на наличие связанных событий
     @DeleteMapping("/{categoryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable long categoryId) {

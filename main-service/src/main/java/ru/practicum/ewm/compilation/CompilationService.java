@@ -7,13 +7,16 @@ import ru.practicum.ewm.compilation.model.UpdateCompilationRequest;
 import java.util.Collection;
 
 public interface CompilationService {
-//    Public
+    //    Public
     Collection<CompilationDto> getCompilations(boolean pinned, int from, int size);
+
     CompilationDto getCompilation(long compId);
 
-//    Admin
+    //    Admin
     CompilationDto saveCompilation(NewCompilationDto newCompilationDto);
+
     void deleteCompilation(long compId);
+
     CompilationDto updateCompilation(long compId, UpdateCompilationRequest updateCompilationRequest);
 
 

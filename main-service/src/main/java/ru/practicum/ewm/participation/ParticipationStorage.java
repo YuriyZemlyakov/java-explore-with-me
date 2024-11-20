@@ -9,11 +9,14 @@ import java.util.Optional;
 
 public interface ParticipationStorage extends JpaRepository<Participation, Long> {
     Optional<Participation> findByEventAndRequester(long event, long requester);
-    Collection<Participation> findByStatus(StateParticipation status);
-    Collection<Participation> findByRequester(long requester);
-    Collection<Participation> findAllByEventAndRequester(long eventId, long userId);
-    Collection<Participation> findByEvent(long event);
 
+    Collection<Participation> findByStatus(StateParticipation status);
+
+    Collection<Participation> findByRequester(long requester);
+
+    Collection<Participation> findAllByEventAndRequester(long eventId, long userId);
+
+    Collection<Participation> findByEvent(long event);
 
 
 }

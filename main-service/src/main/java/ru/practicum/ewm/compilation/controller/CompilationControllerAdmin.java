@@ -29,7 +29,7 @@ public class CompilationControllerAdmin {
 
     @PatchMapping("/{compId}")
     public CompilationDto updateCompilation(@PathVariable long compId,
-                             @RequestBody @Valid UpdateCompilationRequest updateCompilationRequest) {
+                                            @RequestBody @Valid UpdateCompilationRequest updateCompilationRequest) {
         return service.updateCompilation(compId, updateCompilationRequest);
     }
 }

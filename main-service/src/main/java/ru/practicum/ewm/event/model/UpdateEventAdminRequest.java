@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import ru.practicum.ewm.category.Category;
 
 import java.time.LocalDateTime;
+
 @Data
 public class UpdateEventAdminRequest {
     @Size(min = 20, max = 2000)

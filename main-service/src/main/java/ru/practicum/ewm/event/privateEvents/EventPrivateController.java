@@ -3,7 +3,6 @@ package ru.practicum.ewm.event.privateEvents;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.model.*;
@@ -17,10 +16,11 @@ import java.util.Collection;
 @Slf4j
 public class EventPrivateController {
     private final EventPrivateService service;
+
     @GetMapping
     public Collection<EventShortDto> getEvents(@PathVariable long userId,
-                                                     @RequestParam(defaultValue = "0") int from,
-                                                     @RequestParam(defaultValue = "10") int size) {
+                                               @RequestParam(defaultValue = "0") int from,
+                                               @RequestParam(defaultValue = "10") int size) {
         return service.getEvents(userId, from, size);
     }
 
@@ -35,16 +35,19 @@ public class EventPrivateController {
     public EventFullDto getEvent(@PathVariable long userId, @PathVariable long eventId) {
         return service.getEvent(userId, eventId);
     }
+
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable long userId,
-                                  @PathVariable long eventId,
-                                  @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) {
+                                    @PathVariable long eventId,
+                                    @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) {
         return service.updateEvent(userId, eventId, updateEventUserRequest);
     }
+
     @GetMapping("/{eventId}/requests")
     public Collection<ParticipationRequestDto> getEventParticipants(@PathVariable long userId, @PathVariable long eventId) {
         return service.getEventParticipants(userId, eventId);
     }
+
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult changeRequestStatus(@PathVariable long userId,
                                                               @PathVariable long eventId,

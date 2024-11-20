@@ -77,9 +77,9 @@ public class ParticipationServiceImpl implements ParticipationService {
                 || participation.getStatus() == StateParticipation.PENDING) {
             if (participation.getStatus() == StateParticipation.CONFIRMED) {
                 Event event = getEvent(participation.getEvent());
-                updateConfirmedRequests(event, StateParticipation.REJECTED);
+                updateConfirmedRequests(event, StateParticipation.CANCELED);
             }
-            participation.setStatus(StateParticipation.REJECTED);
+            participation.setStatus(StateParticipation.CANCELED);
         } else {
             throw new ValidationException("Заявка уже была отклонена ранее");
         }

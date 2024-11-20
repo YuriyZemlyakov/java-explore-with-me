@@ -3,9 +3,7 @@ package ru.practicum.ewm.event.publicEvents;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import ru.practicum.ewm.event.model.EventFullDto;
 import ru.practicum.ewm.event.model.EventShortDto;
 import ru.practicum.ewmClient.StatsClient;
@@ -22,17 +20,18 @@ public class EventPublicController {
     private final EventPublicService service;
     private final StatsClient client;
     private static final String APP = "main-service";
+
     @GetMapping
     public Collection<EventShortDto> getEvents(String text,
-                                        @RequestParam(required = false) Collection<Long> categories,
-                                        @RequestParam(required = false) Boolean paid,
-                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss" ) LocalDateTime rangeStart,
-                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss" )LocalDateTime rangeEnd,
-                                        @RequestParam(required = false) boolean onlyAvailable,
-                                        @RequestParam(required = false) SortType sort,
-                                        @RequestParam(defaultValue = "0") int from,
-                                        @RequestParam(defaultValue = "10") int size,
-                                        HttpServletRequest request) {
+                                               @RequestParam(required = false) Collection<Long> categories,
+                                               @RequestParam(required = false) Boolean paid,
+                                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                               @RequestParam(required = false) boolean onlyAvailable,
+                                               @RequestParam(required = false) SortType sort,
+                                               @RequestParam(defaultValue = "0") int from,
+                                               @RequestParam(defaultValue = "10") int size,
+                                               HttpServletRequest request) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         HitDto hitDto = HitDto.builder()
                 .app(APP)
@@ -41,7 +40,7 @@ public class EventPublicController {
                 .timestamp(LocalDateTime.now().format(formatter))
                 .build();
         client.sendHit(hitDto);
-        return service.getEvents(text,categories,paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+        return service.getEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
     @GetMapping("/{eventId}")
@@ -57,7 +56,7 @@ public class EventPublicController {
 
         HitDto responseDto = client.sendHit(hitDto).getBody();
         boolean isFirstView = responseDto.getFirst();
-        return service.getEvent(eventId,isFirstView);
+        return service.getEvent(eventId, isFirstView);
     }
 
 }

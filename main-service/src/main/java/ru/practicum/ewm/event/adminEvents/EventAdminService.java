@@ -8,12 +8,12 @@ import java.util.Collection;
 
 public interface EventAdminService {
     Collection<EventFullDto> getEvents(Collection<Long> users,
-                           Collection<String> states,
-                           Collection<Long> categories,
-                           LocalDateTime rangeStart,
-                           LocalDateTime rangeEnd,
-                           long from,
-                           long size);
+                                       Collection<String> states,
+                                       Collection<Long> categories,
+                                       LocalDateTime rangeStart,
+                                       LocalDateTime rangeEnd,
+                                       long from,
+                                       long size);
 
     EventFullDto editEvent(long eventId, UpdateEventAdminRequest request);
 }

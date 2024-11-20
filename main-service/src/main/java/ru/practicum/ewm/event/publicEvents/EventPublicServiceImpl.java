@@ -1,8 +1,6 @@
 package ru.practicum.ewm.event.publicEvents;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.event.dal.EventStorage;
@@ -14,9 +12,7 @@ import ru.practicum.ewm.exception.ValidationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.Optional.*;
 
 @Service
 @AllArgsConstructor
@@ -52,7 +48,7 @@ public class EventPublicServiceImpl implements EventPublicService {
         }
         builder.and(QEvent.event.state.eq(StateEvent.PUBLISHED));
 
-        Iterable<Event> eventIterable=  storage.findAll(builder);
+        Iterable<Event> eventIterable = storage.findAll(builder);
         Collection<Event> events = new ArrayList<>();
         eventIterable.forEach(event -> {
             events.add(event);
@@ -68,8 +64,8 @@ public class EventPublicServiceImpl implements EventPublicService {
     @Override
     public EventFullDto getEvent(long eventId, boolean isFirstView) {
         Event event = storage.findByIdAndState(eventId, StateEvent.PUBLISHED)
-                .orElseThrow(()-> new NotFoundException(String
-                .format("Event %s не найден", eventId)));
+                .orElseThrow(() -> new NotFoundException(String
+                        .format("Event %s не найден", eventId)));
         if (isFirstView) {
             event.setViews(event.getViews() + 1);
             storage.save(event);

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryStorage storage;
     private final CategoryMapper mapper;
+
     @Override
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
         Category cat = mapper.newDtoToEntity(newCategoryDto);
@@ -20,7 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto editCategory(long categoryId, CategoryDto categoryDto) {
-        Category editedCat = storage.findById(categoryId).orElseThrow(()-> new NotFoundException(String
+        Category editedCat = storage.findById(categoryId).orElseThrow(() -> new NotFoundException(String
                 .format("Категория %s не найдена", categoryId)));
         editedCat.setName(categoryDto.getName());
         return mapper.entityToDto(storage.save(editedCat));
@@ -34,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto getCategory(long catId) {
         return mapper.entityToDto(storage.findById(catId)
-                .orElseThrow(()-> new NotFoundException("Категория не найдена")));
+                .orElseThrow(() -> new NotFoundException("Категория не найдена")));
     }
 
     @Override

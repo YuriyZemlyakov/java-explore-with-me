@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import ru.practicum.ewm.category.Category;
-import ru.practicum.ewm.participation.model.StateParticipation;
 import ru.practicum.ewm.user.UserShortDto;
 
 import java.time.LocalDateTime;
