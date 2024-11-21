@@ -17,6 +17,8 @@ public interface EventStorage extends JpaRepository<Event, Long>, QuerydslPredic
     Collection<Event> findWithPagination(long userId, int from, int size);
 
     Optional<Event> findByIdAndState(long eventId, StateEvent state);
+
     Collection<Event> findAllByCategory_Id(long categoryId);
+
     Optional<Event> findByIdAndInitiator_Id(long eventId, long initiatorId);
 }
