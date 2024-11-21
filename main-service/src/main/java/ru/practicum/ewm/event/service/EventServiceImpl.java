@@ -1,5 +1,6 @@
-package ru.practicum.ewm.event.privateEvents;
+package ru.practicum.ewm.event.service;
 
+import com.querydsl.core.BooleanBuilder;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +10,10 @@ import ru.practicum.ewm.category.CategoryStorage;
 import ru.practicum.ewm.event.dal.EventStorage;
 import ru.practicum.ewm.event.model.*;
 import ru.practicum.ewm.event.model.mapper.EventMapper;
+import ru.practicum.ewm.event.publicEvents.SortType;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
+import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.participation.ParticipationStorage;
 import ru.practicum.ewm.participation.model.Participation;
 import ru.practicum.ewm.participation.model.ParticipationRequestDto;
@@ -20,6 +23,8 @@ import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserStorage;
 import ru.practicum.ewm.validator.EventValidator;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,7 +32,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class EventPrivateServiceImpl implements EventPrivateService {
+public class EventServiceImpl implements EventService {
     private final EventMapper mapper;
     private final ParticipationMapper participationMapper;
     private final EventStorage storage;
@@ -80,13 +85,9 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     @Override
     public Collection<ParticipationRequestDto> getEventParticipants(long userId, long eventId) {
-        Event event = storage.findById(eventId)
+        Event event = storage.findByIdAndInitiator_Id(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(String
                         .format("Event %s не найден", eventId)));
-        if (userId != event.getInitiator().getId()) {
-            throw new ConflictException(String.format("Пользователь %s не имеет права запрашиать информацию " +
-                    "об участниках события %s", userId, eventId));
-        }
         Collection<Participation> participations = participationStorage.findByEvent(eventId);
         return participations.stream()
                 .map(participation -> participationMapper.entityToDto(participation))
@@ -143,20 +144,104 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             result.setRejectedRequests(updatedParticipations);
         }
         return result;
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Collection<EventFullDto> getEvents(Collection<Long> users,
+                                              Collection<String> states,
+                                              Collection<Long> categories,
+                                              LocalDateTime rangeStart,
+                                              LocalDateTime rangeEnd,
+                                              long from,
+                                              long size) {
+        BooleanBuilder builder = new BooleanBuilder();
+        if (users != null) {
+            builder.and(QEvent.event.initiator.id.in(users));
+        }
+        if (states != null) {
+            builder.and(QEvent.event.state.in(convertStringToEnum(states)));
+        }
+        if (categories != null) {
+            builder.and(QEvent.event.category.id.in(categories));
+        }
+        if (rangeStart != null) {
+            builder.and(QEvent.event.eventDate.gt(rangeStart));
+        }
+        if (rangeEnd != null) {
+            builder.and(QEvent.event.eventDate.lt(rangeEnd));
+        }
+
+        Collection<Event> events = new ArrayList<>();
+        Iterable<Event> eventIterable = storage.findAll(builder);
+        eventIterable.forEach(event -> events.add(event));
+        return events.stream()
+                .map(event -> mapper.eventToDto(event))
+                .skip(from)
+                .limit(size)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EventFullDto editEvent(long eventId, UpdateEventAdminRequest updateDto) {
+        Event oldEvent = EventValidator.checkEventExists(storage, eventId);
+        EventValidator.validateEventDateAdmin(updateDto);
+        EventValidator.checkRejectAction(oldEvent);
+        Event updatedEvent = buildEditedObject(oldEvent, updateDto);
+        return mapper.eventToDto(storage.save(updatedEvent));
+    }
+
+    @Override
+    public Collection<EventShortDto> getEvents(String text, Collection<Long> categories, Boolean paid,
+                                               LocalDateTime rangeStart, LocalDateTime rangeEnd, boolean onlyAvailable,
+                                               SortType sort, int from, int size) {
 
 
-//        log.info("Сохранение заявок на участие с обновленным статусом");
-//        Collection<ParticipationRequestDto> confirmedRequests = participationStorage.findByStatus(StateParticipation.CONFIRMED)
-//                .stream()
-//                .map(participation -> participationMapper.entityToDto(participation))
-//                .collect(Collectors.toList());
-//        Collection<ParticipationRequestDto> rejectedRequests = participationStorage.findByStatus(StateParticipation.REJECTED)
-//                .stream()
-//                .map(participation -> participationMapper.entityToDto(participation))
-//                .collect(Collectors.toList());
-//
-//        EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult(confirmedRequests, rejectedRequests);
-//        return result;
+        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
+            throw new ValidationException("Начальная дата не может быть позже конечной");
+        }
+        BooleanBuilder builder = new BooleanBuilder();
+        if (text != null && !text.isBlank()) {
+            builder.and(QEvent.event.annotation.likeIgnoreCase(text))
+                    .or(QEvent.event.description.likeIgnoreCase(text));
+        }
+        if (categories != null) {
+            builder.and(QEvent.event.category.id.in(categories));
+        }
+        if (paid != null) {
+            builder.and(QEvent.event.paid.eq(paid));
+        }
+        if (rangeStart != null) {
+            builder.and(QEvent.event.eventDate.gt(rangeStart));
+        }
+        if (rangeEnd != null) {
+            builder.and(QEvent.event.eventDate.lt(rangeEnd));
+        }
+        builder.and(QEvent.event.state.eq(StateEvent.PUBLISHED));
+
+        Iterable<Event> eventIterable = storage.findAll(builder);
+        Collection<Event> events = new ArrayList<>();
+        eventIterable.forEach(event -> {
+            events.add(event);
+        });
+
+        return events.stream()
+                .map(event -> mapper.eventToShortDto(event))
+                .skip(from)
+                .limit(size)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EventFullDto getEvent(long eventId, boolean isFirstView) {
+        Event event = storage.findByIdAndState(eventId, StateEvent.PUBLISHED)
+                .orElseThrow(() -> new NotFoundException(String
+                        .format("Event %s не найден", eventId)));
+        if (isFirstView) {
+            event.setViews(event.getViews() + 1);
+            storage.save(event);
+        }
+        return mapper.eventToDto(event);
     }
 
     private void checkParticipantsLimit(Event event, EventRequestStatusUpdateRequest request) {
@@ -186,7 +271,6 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             event.setLocationLat(location.getLat());
             event.setLocationLon(location.getLon());
         });
-//        Optional.ofNullable(updatedFields.isRequestModeration()).ifPresent(event::setRequestModeration);
         Optional.ofNullable(updatedFields.getStateAction()).ifPresent(stateActionUser -> {
             if (stateActionUser == StateActionUser.SEND_TO_REVIEW) {
                 event.setState(StateEvent.PENDING);
@@ -211,5 +295,37 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 .orElseThrow(() -> new NotFoundException(String.format("Категория %s не найдена", categoryId)));
     }
 
+    private Event buildEditedObject(Event event, UpdateEventAdminRequest updatedFields) {
+        Optional.ofNullable(updatedFields.getAnnotation()).ifPresent(event::setAnnotation);
+        Optional.ofNullable(updatedFields.getDescription()).ifPresent(event::setDescription);
+        Optional.ofNullable(updatedFields.getEventDate()).ifPresent(event::setEventDate);
+        Optional.ofNullable(updatedFields.getLocation()).ifPresent(location -> {
+            event.setLocationLat(location.getLat());
+            event.setLocationLon(location.getLon());
+        });
+        Optional.ofNullable(updatedFields.getStateAction()).ifPresent(stateActionAdmin -> {
+            if (stateActionAdmin == StateActionAdmin.REJECT_EVENT) {
+                event.setState(StateEvent.CANCELED);
+            }
+            if (stateActionAdmin == StateActionAdmin.PUBLISH_EVENT) {
+                event.setState(StateEvent.PUBLISHED);
+            }
+        });
+        Optional.ofNullable(updatedFields.getTitle()).ifPresent(event::setTitle);
+        if (updatedFields.getCategory() != 0) {
+            event.setCategory(getCategoryById(updatedFields.getCategory()));
+        }
+        if (updatedFields.getParticipantLimit() > 0) {
+            event.setParticipantLimit(updatedFields.getParticipantLimit());
+        }
+        event.setPaid(updatedFields.isPaid());
+        return event;
+    }
 
+    private Collection<StateEvent> convertStringToEnum(Collection<String> states) {
+        Collection<StateEvent> statesList = states.stream()
+                .map(state -> StateEvent.valueOf(state))
+                .collect(Collectors.toList());
+        return statesList;
+    }
 }

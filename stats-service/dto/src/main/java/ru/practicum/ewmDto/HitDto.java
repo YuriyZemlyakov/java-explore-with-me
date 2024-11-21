@@ -15,5 +15,5 @@ public class HitDto {
     private String ip;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private String timestamp;
-    Boolean first;
+    private Boolean first;
 }

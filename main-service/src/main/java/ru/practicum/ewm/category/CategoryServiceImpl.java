@@ -2,6 +2,8 @@ package ru.practicum.ewm.category;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.ewm.event.dal.EventStorage;
+import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
 
 import java.util.Collection;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryStorage storage;
     private final CategoryMapper mapper;
+    private final EventStorage eventStorage;
 
     @Override
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
@@ -29,6 +32,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(long categoryId) {
+        if (eventStorage.findAllByCategory_Id(categoryId).size() != 0) {
+            throw new ConflictException("Есть события, имеющие такую категорию");
+        }
         storage.deleteById(categoryId);
     }
 

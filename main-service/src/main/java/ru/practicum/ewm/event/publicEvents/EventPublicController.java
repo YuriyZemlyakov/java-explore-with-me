@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.model.EventFullDto;
 import ru.practicum.ewm.event.model.EventShortDto;
+import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewmClient.StatsClient;
 import ru.practicum.ewmDto.HitDto;
 
@@ -17,7 +18,7 @@ import java.util.Collection;
 @RequestMapping("/events")
 @AllArgsConstructor
 public class EventPublicController {
-    private final EventPublicService service;
+    private final EventService service;
     private final StatsClient client;
     private static final String APP = "main-service";
 

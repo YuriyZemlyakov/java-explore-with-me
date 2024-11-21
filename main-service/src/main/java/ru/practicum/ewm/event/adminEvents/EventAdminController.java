@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.model.EventFullDto;
 import ru.practicum.ewm.event.model.UpdateEventAdminRequest;
+import ru.practicum.ewm.event.service.EventService;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -14,7 +15,7 @@ import java.util.Collection;
 @RequestMapping("/admin/events")
 @AllArgsConstructor
 public class EventAdminController {
-    private final EventAdminService service;
+    private final EventService service;
 
     @GetMapping
     public Collection<EventFullDto> getEvents(@RequestParam(required = false) Collection<Long> users,

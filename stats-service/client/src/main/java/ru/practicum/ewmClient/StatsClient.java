@@ -1,5 +1,6 @@
 package ru.practicum.ewmClient;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -16,11 +17,12 @@ import java.util.Optional;
 
 @Component
 public class StatsClient {
-    private final String statsServerUrl = "http://stats-server:9090";
     private final RestTemplate restTemplate;
+    private String statsServerUrl;
 
-    public StatsClient() {
+    public StatsClient(@Value("${services.stats-server.uri:http://localhost:9090}") String statsServerUrl) {
         this.restTemplate = new RestTemplate();
+        this.statsServerUrl = statsServerUrl;
     }
 
     public ResponseEntity<HitDto> sendHit(HitDto hitDto) {

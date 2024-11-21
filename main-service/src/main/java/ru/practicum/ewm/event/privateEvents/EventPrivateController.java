@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.model.*;
+import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.participation.model.ParticipationRequestDto;
 
 import java.util.Collection;
@@ -15,7 +16,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Slf4j
 public class EventPrivateController {
-    private final EventPrivateService service;
+    private final EventService service;
 
     @GetMapping
     public Collection<EventShortDto> getEvents(@PathVariable long userId,

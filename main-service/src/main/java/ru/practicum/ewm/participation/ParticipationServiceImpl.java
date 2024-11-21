@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.event.dal.EventStorage;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.StateEvent;
-import ru.practicum.ewm.event.privateEvents.EventPrivateServiceImpl;
+import ru.practicum.ewm.event.service.EventServiceImpl;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
@@ -24,7 +24,7 @@ public class ParticipationServiceImpl implements ParticipationService {
     private final ParticipationMapper mapper;
     private final ParticipationStorage storage;
     private final EventStorage eventStorage;
-    private final EventPrivateServiceImpl eventPrivateService;
+    private final EventServiceImpl eventPrivateService;
 
     @Override
     public Collection<ParticipationRequestDto> getUserRequests(long userId) {

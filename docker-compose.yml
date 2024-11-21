@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   ewm-service:
     build: main-service
