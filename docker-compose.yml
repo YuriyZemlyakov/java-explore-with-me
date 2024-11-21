@@ -7,17 +7,19 @@ services:
       ewm-db:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5431/ewm-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/main-db
       - SPRING_DATASOURCE_USERNAME=dbuser
       - SPRING_DATASOURCE_PASSWORD=12345
   ewm-db:
     image: postgres:16.1
     ports:
-      - "5431:5431"
+      - "5433:5432"
     environment:
-      - POSTGRES_DB=ewm-db
+      - POSTGRES_DB=main-db
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=12345
+    volumes:
+      - ./volumes/ewm-db:/var/lib/ewm-db/data/
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
@@ -38,7 +40,7 @@ services:
   stats-db:
     image: postgres:16.1
     ports:
-      - "5433:5432"
+      - "5438:5432"
     environment:
       - POSTGRES_DB=stats-db
       - POSTGRES_USER=dbuser

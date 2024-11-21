@@ -8,6 +8,8 @@ import ru.practicum.ewmstatserver.mapper.HitMapper;
 import ru.practicum.ewmstatserver.repository.StatsRepository;
 import ru.practicum.ewmstatserver.service.HitService;
 
+import java.util.Collection;
+
 @Service
 @AllArgsConstructor
 public class HitServiceImpl implements HitService {
@@ -17,6 +19,20 @@ public class HitServiceImpl implements HitService {
     @Override
     public HitDto addHit(HitDto hitDto) {
         Hit hit = mapper.dtoToEntity(hitDto);
-        return mapper.entityToDto(statsRepository.save(hit));
+        boolean first = checkFirstView(hit);
+        HitDto responseDto = mapper.entityToDto(statsRepository.save(hit));
+        responseDto.setFirst(first);
+        return responseDto;
+    }
+
+    private boolean checkFirstView(Hit hit) {
+        String ip = hit.getIp();
+        String uri = hit.getUri();
+        Collection<Hit> hits = statsRepository.findByIpAndUri(ip, uri);
+        boolean isFirst = false;
+        if (hits.size() == 0) {
+            isFirst = true;
+        }
+        return isFirst;
     }
 }
