@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class CommentRequestDto {
     @NotBlank
-    @Size(min = 2, max = 250)
+    @Size(min = 5, max = 250)
     private String text;
 }
