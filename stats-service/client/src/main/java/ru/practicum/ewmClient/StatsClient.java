@@ -20,7 +20,7 @@ public class StatsClient {
     private final RestTemplate restTemplate;
     private String statsServerUrl;
 
-    public StatsClient(@Value("${services.stats-server.uri:http://localhost:9090}") String statsServerUrl) {
+    public StatsClient(@Value("${services.stats-server.uri}") String statsServerUrl) {
         this.restTemplate = new RestTemplate();
         this.statsServerUrl = statsServerUrl;
     }
