@@ -141,17 +141,17 @@
 							"        const comment = await api.addComment(user.id, commentBody);\r",
 							"        pm.collectionVariables.set(\"commentId\", comment.id);\r",
 							"        editedCommentBody = {\"text\": \"new text\"};\r",
+							"        pm.request.body.update({\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify(editedCommentBody),\r",
+							"            options: { raw: { language: 'json' } }\r",
+							"    });\r",
 							"\r",
 							"        \r",
 							"    } catch(err) {\r",
 							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
 							"    }\r",
 							"\r",
-							"    pm.request.body.update({\r",
-							"        mode: 'raw',\r",
-							"        raw: JSON.stringify(editedCommentBody),\r",
-							"        options: { raw: { language: 'json' } }\r",
-							"    });\r",
 							"};\r",
 							"\r",
 							"const interval = setInterval(() => {}, 1000);\r",
@@ -205,6 +205,15 @@
 			"request": {
 				"method": "PATCH",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "{{baseUrl}}/users/:userId/comments/:commentId",
 					"host": [
@@ -252,17 +261,16 @@
 							"        const comment = await api.addComment(user.id, commentBody);\r",
 							"        pm.collectionVariables.set(\"commentId\", comment.id);\r",
 							"        editedCommentBody = {\"text\": \"new text\"};\r",
+							"        pm.request.body.update({\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify(editedCommentBody),\r",
+							"            options: { raw: { language: 'json' } }\r",
+							"    });\r",
 							"\r",
 							"        \r",
 							"    } catch(err) {\r",
 							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
 							"    }\r",
-							"\r",
-							"    pm.request.body.update({\r",
-							"        mode: 'raw',\r",
-							"        raw: JSON.stringify(editedCommentBody),\r",
-							"        options: { raw: { language: 'json' } }\r",
-							"    });\r",
 							"};\r",
 							"\r",
 							"const interval = setInterval(() => {}, 1000);\r",
@@ -316,6 +324,15 @@
 			"request": {
 				"method": "PATCH",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "{{baseUrl}}/admin/comments/:commentId",
 					"host": [
