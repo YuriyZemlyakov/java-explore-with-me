@@ -15,4 +15,5 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastModified;
+    private ModificationType lastModifiedBy;
 }

@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS comment (
   text VARCHAR(250),
   created_at TIMESTAMP,
   last_modified TIMESTAMP,
+  last_modified_by VARCHAR(255),
   FOREIGN KEY (event_id) REFERENCES event(id),
   FOREIGN KEY (user_id) REFERENCES user_table(id)
 );

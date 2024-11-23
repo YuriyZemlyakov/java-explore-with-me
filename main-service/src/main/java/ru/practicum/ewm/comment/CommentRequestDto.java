@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class CommentRequestDto {
+    private long eventId;
     @NotBlank
     @Size(min = 5, max = 250)
     private String text;

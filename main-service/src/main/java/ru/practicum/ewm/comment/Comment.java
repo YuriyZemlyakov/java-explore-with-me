@@ -22,4 +22,6 @@ public class Comment {
     private String text;
     private LocalDateTime createdAt;
     private LocalDateTime lastModified;
+    @Enumerated(EnumType.STRING)
+    private ModificationType lastModifiedBy;
 }

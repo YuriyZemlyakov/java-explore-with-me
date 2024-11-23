@@ -22,7 +22,8 @@ public class CommentServiceImpl implements CommentService {
     private final UserStorage userStorage;
 
     @Override
-    public CommentResponseDto addComment(long userId, long eventId, CommentRequestDto dto) {
+    public CommentResponseDto addComment(long userId, CommentRequestDto dto) {
+        long eventId = dto.getEventId();
         Event event = eventStorage.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Событие с id %s не найдено", eventId)));
         User author = userStorage.findById(userId)
@@ -36,12 +37,23 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponseDto editComment(long commentId, long userId, CommentRequestDto dto) {
+    public CommentResponseDto editComment(long commentId, long userId, CommentUpdateDto dto) {
         Comment comment = storage.findByIdAndAuthor_Id(commentId, userId)
                 .orElseThrow(() -> new ConflictException(String.format("У пользователя %s не найдено комментариев" +
                         "с id %s", userId, commentId)));
         comment.setText(dto.getText());
         comment.setLastModified(LocalDateTime.now());
+        comment.setLastModifiedBy(ModificationType.AUTHOR);
+        return mapper.entityToDto(storage.save(comment));
+    }
+
+    @Override
+    public CommentResponseDto moderateComment(long commentId, CommentUpdateDto dto) {
+        Comment comment = storage.findById(commentId)
+                .orElseThrow(() -> new ConflictException(String.format("Cобытие с id % не найдено")));
+        comment.setText(dto.getText());
+        comment.setLastModified(LocalDateTime.now());
+        comment.setLastModifiedBy(ModificationType.ADMIN);
         return mapper.entityToDto(storage.save(comment));
     }
 
@@ -60,7 +72,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(long commentId) {
+    public void deleteCommentAdmin(long commentId) {
         storage.deleteById(commentId);
     }
+
+    @Override
+    public void deleteCommentUser(long userId, long commentId) {
+    }
+
 }
