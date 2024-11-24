@@ -78,6 +78,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteCommentUser(long userId, long commentId) {
+        checkAccessToDelete(commentId, userId);
+        storage.deleteById(commentId);
+
     }
 
+    private void checkAccessToDelete(long commentId, long userId) {
+        Comment commentCreatedByUser = storage.findByIdAndAuthor_Id(commentId, userId)
+                .orElseThrow(() -> new NotFoundException(String
+                        .format("Событие с id %s, созданное пользователем %s, не найдено", commentId, userId)));
+    }
 }
